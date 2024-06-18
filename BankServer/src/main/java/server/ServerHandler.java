@@ -44,7 +44,7 @@ public class ServerHandler implements Runnable {
 					edit();
 					break;
 				case 5:
-				transfer();
+					transfer();
 					break;
 				case 6:
 					search();
@@ -64,6 +64,8 @@ public class ServerHandler implements Runnable {
 				case 11:
 					loadUserData(); // Add this case
 					break;
+				case 12:
+					checkExistAccNumber();
 				default:
 					break;
 				}
@@ -73,7 +75,13 @@ public class ServerHandler implements Runnable {
 		}
 	}
 
-	private void search() throws IOException {
+	private synchronized void checkExistAccNumber() throws IOException {
+		String accNumber=input.readUTF();
+		boolean check= DatabaseHelper.isAccountNumberExist(accNumber);
+		output.writeBoolean(check);
+	}
+
+	private synchronized void search() throws IOException {
 		String keyword = input.readUTF();
 		List<UserAccount> users = DatabaseHelper.searchUsers(keyword);
 		Gson gson = new Gson();
@@ -82,7 +90,7 @@ public class ServerHandler implements Runnable {
 		output.flush();
 	}
 
-	private void addUser() throws IOException {
+	private synchronized void addUser() throws IOException {
 		String userJson = input.readUTF();
 		Gson gson = new Gson();
 		UserAccount user = gson.fromJson(userJson, UserAccount.class);
@@ -91,7 +99,7 @@ public class ServerHandler implements Runnable {
 //		output.flush();
 	}
 
-	private void editUser() throws IOException {
+	private synchronized void editUser() throws IOException {
 		String userJson = input.readUTF();
 		Gson gson = new Gson();
 		UserAccount user = gson.fromJson(userJson, UserAccount.class);
@@ -100,14 +108,14 @@ public class ServerHandler implements Runnable {
 		output.flush();
 	}
 
-	private void deleteUser() throws IOException {
+	private synchronized void deleteUser() throws IOException {
 		String accountNumber = input.readUTF();
 		boolean isSuccess = DatabaseHelper.deleteUser(accountNumber);
 		output.writeBoolean(isSuccess);
 		output.flush();
 	}
 
-	private void depositMoney() throws IOException {
+	private synchronized void depositMoney() throws IOException {
 		String accountNumber = input.readUTF();
 		String amountStr = input.readUTF();
 		BigDecimal amount = new BigDecimal(amountStr);
@@ -116,7 +124,7 @@ public class ServerHandler implements Runnable {
 		output.flush();
 	}
 
-	private void transfer() throws IOException {
+	private synchronized void transfer() throws IOException {
 		String number = input.readUTF();
 		UserAccount usertranfer = DatabaseHelper.findUser(number);
 		if (usertranfer != null) {
@@ -126,11 +134,11 @@ public class ServerHandler implements Runnable {
 			boolean check = DatabaseHelper.chuyenTien(numberFrom, number, new BigDecimal(money));
 			output.writeBoolean(check);
 		} else {
-			output.writeUTF(null);
+			output.writeUTF(" ");
 		}
 	}
 
-	private void edit() throws IOException {
+	private synchronized void edit() throws IOException {
 		String UserEdit = input.readUTF();
 		Gson gson = new Gson();
 		UserAccount account = gson.fromJson(UserEdit, UserAccount.class);
@@ -138,7 +146,7 @@ public class ServerHandler implements Runnable {
 		output.writeBoolean(check);
 	}
 
-	private void checkLogin() throws IOException {
+	private synchronized void checkLogin() throws IOException {
 		String user = input.readUTF();
 		String pass = input.readUTF();
 		boolean isAuthenticated = DatabaseHelper.authenticateUser(user, pass);
@@ -150,17 +158,18 @@ public class ServerHandler implements Runnable {
 			String jsonuseraccount = gson.toJson(userAccount);
 			output.write(jsonuseraccount.getBytes());
 		}
+
 		output.flush();
 	}
 
-	private void rutTien() throws IOException {
+	private synchronized void rutTien() throws IOException {
 		String number = input.readUTF();
 		String sotien = input.readUTF();
 		boolean check = DatabaseHelper.rutTien(number, new BigDecimal(sotien));
 		output.writeBoolean(check);
 	}
 
-	private void loadUserData() throws IOException {
+	private synchronized void loadUserData() throws IOException {
 		List<UserAccount> users = DatabaseHelper.getAllUserAccounts();
 		Gson gson = new Gson();
 		String jsonUsers = gson.toJson(users);

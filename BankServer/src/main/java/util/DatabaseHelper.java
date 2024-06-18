@@ -237,4 +237,24 @@ public class DatabaseHelper {
         }
         return users;
     }
+    
+    public synchronized static boolean isAccountNumberExist(String accountNumber) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = null;
+        boolean exists = false;
+        try {
+            transaction = session.beginTransaction();
+            String hql = "SELECT 1 FROM UserAccount WHERE accountNumber = :accountNumber";
+            Query<?> query = session.createQuery(hql);
+            query.setParameter("accountNumber", accountNumber);
+            exists = query.uniqueResult() != null;
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return exists;
+    }
 }

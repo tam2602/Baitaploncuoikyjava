@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controller.BankException;
 import controller.RegisterListenner;
 import model.UserAccount;
 
@@ -24,7 +25,7 @@ import java.net.Socket;
 public class ViewRegister extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
-    private JTextField tfAccountNumber;
+    private static JTextField tfAccountNumber;
     private JTextField tfUserName;
     private JTextField tfPassword;
     private JTextField tfRePassword;
@@ -34,7 +35,7 @@ public class ViewRegister extends JFrame {
 	private Socket socket;
 
     public ViewRegister() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setBounds(100, 100, 523, 550);
         setTitle("Register");
         contentPane = new JPanel();
@@ -129,19 +130,33 @@ public class ViewRegister extends JFrame {
             String rePassword = tfRePassword.getText();
             String fullName = tfFullName.getText();
             String role = tfRole.getText();
-            System.out.println("b1");
             BigDecimal balance = new BigDecimal(tfBalance.getText());
+            if(accountNumber.isBlank()||userName.isBlank()||password.isBlank()||rePassword.isBlank()||fullName.isBlank()) {
+            	 JOptionPane.showMessageDialog(null, "TRƯỜNG DỮ LIỆU TRỐNG!");
+            	 return;
+            }
+            socket = ViewLogin.getSocket();
+            RegisterListenner listenner= new RegisterListenner(this, socket);
+            try {
+            	BankException.checkAccountNumber(accountNumber);
+				if(listenner.checkAccNumber()) {
+					JOptionPane.showMessageDialog(null, "SỐ TÀI KHOẢN ĐÃ TỒN TẠI");
+					return;
+				}
+				
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(null, "Registration failed.");
+				e1.printStackTrace();
+				return;
+			} catch (BankException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage());
+				return;
+			} 
             boolean check=false;
             if (!password.equals(rePassword)) {
-            	 System.out.println("b2");
-                JOptionPane.showMessageDialog(null, "Passwords do not match!");
+                 JOptionPane.showMessageDialog(null, "Passwords do not match!");
             }else {
-            	System.out.println("b3");
             	UserAccount user= new UserAccount(accountNumber, userName, rePassword, fullName, role, balance, null);
-            	socket = ViewLogin.getSocket();
-            	 System.out.println("b4");
-            	RegisterListenner listenner= new RegisterListenner(this, socket);
-            	 System.out.println("b5");
             	try {
             		check=listenner.register(user);
             		 System.out.println("b6");
@@ -171,5 +186,8 @@ public class ViewRegister extends JFrame {
         btnRegister.setBounds(207, 435, 105, 55);
         contentPane.add(btnRegister);
         setVisible(true);
+    }
+    public static String getAccNumber() {
+    	return tfAccountNumber.getText().trim();
     }
 }

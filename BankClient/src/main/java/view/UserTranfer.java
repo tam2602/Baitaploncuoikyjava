@@ -23,7 +23,6 @@ import javax.swing.JTextField;
 
 public class UserTranfer extends JFrame {
 
-	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textSOTHE;
 	private JTextField tfSotien;
@@ -94,10 +93,14 @@ public class UserTranfer extends JFrame {
 		btnChuynTinNgay.setBounds(402, 500, 181, 57);
 		btnChuynTinNgay.setVisible(false);
 		btnChuynTinNgay.addActionListener(e->{
+			if(getMoney().isBlank()) {
+				JOptionPane.showMessageDialog(null, "Trường dữ liệu trống!");
+				return;
+			}
 			try {
 				Socket socket = ViewLogin.getSocket();
 				TranferListenner listenner= new TranferListenner(socket, this);
-				boolean check=listenner.tranFer();
+				boolean check = listenner.tranFer();
 				if(check) {
 					JOptionPane.showMessageDialog(null, "chuyen tien thanh cong");
 					UserAccount edituser= UserView.getUsermain();
@@ -109,7 +112,7 @@ public class UserTranfer extends JFrame {
 					JOptionPane.showMessageDialog(null, "chuyen tien khong thanh cong");
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, "chuyen tien khong thanh cong");
 				e1.printStackTrace();
 			}
 		});
@@ -119,11 +122,15 @@ public class UserTranfer extends JFrame {
 		btnKimTra.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		btnKimTra.setBounds(117, 500, 187, 57);
 		btnKimTra.addActionListener(e->{
+			if(getAccountNumber().isBlank()) {
+				JOptionPane.showMessageDialog(null, "Trường dữ liệu trống!");
+				return;
+			}
 			Socket socket = ViewLogin.getSocket();
 			TranferListenner listenner= new TranferListenner(socket, this);
 			try {
 				String fullname= listenner.checkNumberuser();
-				if(fullname!=null) {
+				if(!fullname.isBlank()) {
 					btnChuynTinNgay.setVisible(true);
 					lblSotaikhoan_1.setText(fullname);
 		
@@ -144,6 +151,11 @@ public class UserTranfer extends JFrame {
 		return UserView.getUsermain().getAccountNumber();
 	}
 	public String getMoney() {
+		try {
+			int check = Integer.parseInt(tfSotien.getText());
+		} catch (Exception e) {
+			return "";
+		}
 		return tfSotien.getText();
 	}
 }

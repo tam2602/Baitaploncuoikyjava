@@ -58,16 +58,20 @@ public class ViewLogin extends JFrame {
         btnLogin.addActionListener(e -> {
             new Thread(() -> {
                 try {
+                	if(getTextUserName().isBlank()||getTextPasword().isBlank()) {
+                	JOptionPane.showMessageDialog(null, "TRƯỜNG DỮ LIỆU TRỐNG");
+                	return;
+                	}
                     listenner = new LoginListenner(this, this.socketClient);
                     String checklogin = listenner.sendUserPass();
-                    userAccount = listenner.getUser();
                     if (checklogin.equals("user")) {
-                        
+                        userAccount = listenner.getUser();
                     	setVisible(false);
                     	System.out.println("user");
                         new UserView(this);
                     } 
                     else if (checklogin.equals("admin")) {
+                    	userAccount = listenner.getUser();
                     	setVisible(false);
                     	AdminView adminView = new AdminView(socketClient);
                         AdminListener adminListener = new AdminListener(socketClient, adminView);
@@ -78,10 +82,10 @@ public class ViewLogin extends JFrame {
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "TÀI KHOẢN VÀ MẬT KHẨU KHÔNG CHÍNH XÁC");
+                    JOptionPane.showMessageDialog(null, "KHÔNG THỂ ĐĂNG NHẬP");
                 } catch (Exception e1) {
 					// TODO Auto-generated catch block
-                	JOptionPane.showMessageDialog(null, "TÀI KHOẢN VÀ MẬT KHẨU KHÔNG CHÍNH XÁC");
+                	JOptionPane.showMessageDialog(null, "KHÔNG THỂ ĐĂNG NHẬP");
 					e1.printStackTrace();
 				}
             }).start();

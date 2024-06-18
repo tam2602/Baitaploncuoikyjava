@@ -36,4 +36,9 @@ public class RegisterListenner {
 		System.out.println("b10");
 		return check;
 	}
+	public synchronized boolean checkAccNumber() throws IOException {
+		output.writeInt(12);
+		output.writeUTF(vr.getAccNumber());
+		return input.readBoolean();
+	}
 }

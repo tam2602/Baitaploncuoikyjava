@@ -26,6 +26,7 @@ public class UserInfo extends JFrame {
 	private JTextField textFieldName;
 	private JTextField textFieldPass;
 	private JTextField textFieldRePass;
+	private UserAccount useracount;
 
 	/**
 	 * Launch the application.
@@ -47,6 +48,8 @@ public class UserInfo extends JFrame {
 	 * Create the frame.
 	 */
 	public UserInfo() {
+		useracount= ViewLogin.getUserview();
+		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 874, 733);
 		contentPane = new JPanel();
@@ -92,7 +95,7 @@ public class UserInfo extends JFrame {
 		lblTaikhoan.setBounds(10, 105, 194, 70);
 		contentPane.add(lblTaikhoan);
 		
-		JLabel lblSotaikhoan = new JLabel("tesst");
+		JLabel lblSotaikhoan = new JLabel(useracount.getAccountNumber());
 		lblSotaikhoan.setFont(new Font("Times New Roman", Font.PLAIN, 25));
 		lblSotaikhoan.setBounds(324, 105, 326, 70);
 		contentPane.add(lblSotaikhoan);
@@ -107,7 +110,7 @@ public class UserInfo extends JFrame {
 		lblSD_1.setBounds(324, 203, 326, 70);
 		contentPane.add(lblSD_1);
 		
-		JLabel lblXinChao = new JLabel("XIN CHÀO,");
+		JLabel lblXinChao = new JLabel("XIN CHÀO,"+useracount.getFullName());
 		lblXinChao.setFont(new Font("Times New Roman", Font.PLAIN, 25));
 		lblXinChao.setBounds(10, 33, 657, 70);
 		contentPane.add(lblXinChao);

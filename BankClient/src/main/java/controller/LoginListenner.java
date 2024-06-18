@@ -30,7 +30,7 @@ public class LoginListenner {
         output.flush();
         boolean isAuthenticated = input.readBoolean();
         if(!isAuthenticated) {
-        	return null;
+        	return "null";
         }else {
             String role=input.readUTF();
             return role;

@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import controller.AdminListener;
+import controller.BankException;
 import model.UserAccount;
 
 public class AdminView extends JFrame implements MouseListener {
@@ -31,7 +32,7 @@ public class AdminView extends JFrame implements MouseListener {
 	JButton insert, edit, delete;
 	JTextField timKiem = new JTextField();
 	int selectedRow = -1;
-	private JTextField textFieldSTK;
+	private static JTextField textFieldSTK;
 	private JTextField textFieldName;
 	private JTextField textFieldUserName;
 	private JTextField textPass;
@@ -55,18 +56,36 @@ public class AdminView extends JFrame implements MouseListener {
 		JButton insert = new JButton("Thêm");
 		insert.addActionListener(e -> {
 			try {
+				BankException.checkAccountNumber(textFieldSTK.getText().trim());
+				if(adminListener.checkAccNumber()) {
+					JOptionPane.showMessageDialog(null, "Số tài khoản đã tồn tại");
+					return;
+				}
 				addUser();
+				clearFields();
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
+			} catch (BankException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage());
+				return;
 			}
 		});
 
 		JButton edit = new JButton("Sửa");
 		edit.addActionListener(e -> {
 			try {
+				BankException.checkAccountNumber(textFieldSTK.getText().trim());
+				if(adminListener.checkAccNumber()) {
+					JOptionPane.showMessageDialog(null, "Số tài khoản đã tồn tại");
+					return;
+				}
 				editUser();
+				clearFields();
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
+			} catch (BankException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage());
+				return;
 			}
 		});
 
@@ -74,6 +93,7 @@ public class AdminView extends JFrame implements MouseListener {
 		delete.addActionListener(e -> {
 			try {
 				deleteUser();
+				clearFields();
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
 			}
@@ -269,6 +289,10 @@ public class AdminView extends JFrame implements MouseListener {
 
 	public String getAmountToDeposit() {
 		return JOptionPane.showInputDialog(this, "Nhập số tiền muốn nạp:");
+	}
+	
+	public static String getAccountNumber() {
+		return textFieldSTK.getText().trim();
 	}
 
 	public void addUser() throws IOException {

@@ -104,4 +104,10 @@ public class AdminListener {
         List<UserAccount> users = new Gson().fromJson(jsonUsers, new TypeToken<List<UserAccount>>() {}.getType());
         adminView.updateTable(users);
     }
+    
+    public synchronized boolean checkAccNumber() throws IOException {
+		output.writeInt(12);
+		output.writeUTF(adminView.getAccountNumber());
+		return input.readBoolean();
+	}
 }
