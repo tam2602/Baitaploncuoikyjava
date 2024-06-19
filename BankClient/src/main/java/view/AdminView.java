@@ -32,11 +32,12 @@ public class AdminView extends JFrame implements MouseListener {
 	JButton insert, edit, delete;
 	JTextField timKiem = new JTextField();
 	int selectedRow = -1;
+	private static final long serialVersionUID = 1L;
 	private static JTextField textFieldSTK;
 	private JTextField textFieldName;
 	private JTextField textFieldUserName;
 	private JTextField textPass;
-	private JTextField textFieldRole;
+	private JComboBox<String> comboBoxRole;  // Sử dụng JComboBox thay vì JTextField
 	private JTextField textFieldBalance;
 	private AdminListener adminListener;
 
@@ -87,6 +88,14 @@ public class AdminView extends JFrame implements MouseListener {
 				JOptionPane.showMessageDialog(null, e1.getMessage());
 				return;
 			}
+			
+//			try {
+//				editUser();
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			clearFields();
 		});
 
 		JButton delete = new JButton("Xóa");
@@ -197,11 +206,10 @@ public class AdminView extends JFrame implements MouseListener {
 		lblBalance.setBounds(710, 69, 146, 41);
 		getContentPane().add(lblBalance);
 
-		textFieldRole = new JTextField();
-		textFieldRole.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		textFieldRole.setColumns(10);
-		textFieldRole.setBounds(866, 19, 153, 33);
-		getContentPane().add(textFieldRole);
+		comboBoxRole = new JComboBox<>(new String[] {"user", "admin"});  // Tạo JComboBox với các tùy chọn
+		comboBoxRole.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		comboBoxRole.setBounds(866, 19, 153, 33);
+		getContentPane().add(comboBoxRole);
 
 		textFieldBalance = new JTextField();
 		textFieldBalance.setFont(new Font("Times New Roman", Font.PLAIN, 16));
@@ -228,7 +236,7 @@ public class AdminView extends JFrame implements MouseListener {
 			textFieldUserName.setText(tb.getValueAt(selectedRow, 1).toString());
 			textPass.setText(tb.getValueAt(selectedRow, 2).toString());
 			textFieldName.setText(tb.getValueAt(selectedRow, 3).toString());
-			textFieldRole.setText(tb.getValueAt(selectedRow, 4).toString());
+			comboBoxRole.setSelectedItem(tb.getValueAt(selectedRow, 4).toString());  // Đặt giá trị cho JComboBox
 			textFieldBalance.setText(tb.getValueAt(selectedRow, 5).toString());
 		}
 	}
@@ -277,7 +285,7 @@ public class AdminView extends JFrame implements MouseListener {
 			String username = textFieldUserName.getText().trim();
 			String password = textPass.getText().trim();
 			String fullName = textFieldName.getText().trim();
-			String role = textFieldRole.getText().trim();
+			String role = comboBoxRole.getSelectedItem().toString().trim();  // Lấy giá trị từ JComboBox
 			BigDecimal balance = new BigDecimal(textFieldBalance.getText().trim());
 			return new UserAccount(accountNumber, username, password, fullName, role, balance, null);
 		} catch (NumberFormatException e) {
@@ -321,7 +329,7 @@ public class AdminView extends JFrame implements MouseListener {
 		textFieldUserName.setText("");
 		textPass.setText("");
 		textFieldName.setText("");
-		textFieldRole.setText("");
+		comboBoxRole.setSelectedIndex(0);  // Đặt lại giá trị mặc định cho JComboBox
 		textFieldBalance.setText("");
 	}
 
